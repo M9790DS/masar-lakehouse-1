@@ -47,11 +47,11 @@ def build_trip_features() -> None:
     features = (silver
         .withColumn("zone_demand_prev_hr", F.count("*").over(w))
         .select("trip_id", "city", "started_at",
-                "start_hour", "is_night", "fare_per_km",
+                "start_hour", "is_night",
                 "surge_multiplier", "zone_demand_prev_hr")
         .withColumn("_feature_version", F.lit("v1")))
     target = f"{GOLD}/trip_features"
-    features.write.format("delta").mode("overwrite").save(target)
+    features.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(target)
     print(f"  trip_features rows: {spark.read.format('delta').load(target).count():,}")
 
 
